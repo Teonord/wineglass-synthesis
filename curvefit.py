@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def model(x, a, b, c, d, e):
-    return a * x ** 4 + b * x ** 3 + c * x ** 2 + d * x + e
+def model(x, o, a, b, c, d, e):
+    return o * x ** 5 + a * x ** 4 + b * x ** 3 + c * x ** 2 + d * x + e
 
 
 mls_wg1 = (0, 50, 100, 150, 200, 250, 300, 320)  # amount of water in glass 1 (ml)
@@ -27,10 +27,10 @@ parameters_f0_wg2, cov_f0_wg2 = curve_fit(model, mls_wg2, f0_wg2)
 parameters_f1_wg2, cov_f1_wg2 = curve_fit(model, mls_wg2, f1_wg2)
 parameters_f2_wg2, cov_f2_wg2 = curve_fit(model, mls_wg2, f2_wg2)
 
-func_x = np.linspace(0, 350, 351)
-f0_fit_wg1 = model(func_x, *parameters_f0_wg1)  # apparently * unpacks list to arguments, crazy
-f1_fit_wg1 = model(func_x, *parameters_f1_wg1)
-f2_fit_wg1 = model(func_x, *parameters_f2_wg1)
+func_x_wg1 = np.linspace(0, max(mls_wg1), max(mls_wg1) + 1)
+f0_fit_wg1 = model(func_x_wg1, *parameters_f0_wg1)  # apparently * unpacks list to arguments, crazy
+f1_fit_wg1 = model(func_x_wg1, *parameters_f1_wg1)
+f2_fit_wg1 = model(func_x_wg1, *parameters_f2_wg1)
 
 print(parameters_f0_wg1)
 print(parameters_f1_wg1)
@@ -40,19 +40,19 @@ print(parameters_f2_wg1)
 plt.scatter(mls_wg1, f0_wg1, label="f0", color='red')
 plt.scatter(mls_wg1, f1_wg1, label="f1", color='green')
 plt.scatter(mls_wg1, f2_wg1, label="f2", color='blue')
-plt.plot(func_x, f0_fit_wg1, color='red')
-plt.plot(func_x, f1_fit_wg1, color='green')
-plt.plot(func_x, f2_fit_wg1, color='blue')
+plt.plot(func_x_wg1, f0_fit_wg1, color='red')
+plt.plot(func_x_wg1, f1_fit_wg1, color='green')
+plt.plot(func_x_wg1, f2_fit_wg1, color='blue')
 plt.legend()
 plt.xlabel("Water volume (ml)")
 plt.ylabel("Frequency")
-plt.title("Fourth degree polynomial fit for glass 1 (small glass)")
+plt.title("Fifth degree polynomial fit for glass 1 (small glass)")
 plt.show()
 
-func_x = np.linspace(0, 350, 351)
-f0_fit_wg2 = model(func_x, *parameters_f0_wg2)
-f1_fit_wg2 = model(func_x, *parameters_f1_wg2)
-f2_fit_wg2 = model(func_x, *parameters_f2_wg2)
+func_x_wg2 = np.linspace(0, max(mls_wg2), max(mls_wg2) + 1)
+f0_fit_wg2 = model(func_x_wg2, *parameters_f0_wg2)
+f1_fit_wg2 = model(func_x_wg2, *parameters_f1_wg2)
+f2_fit_wg2 = model(func_x_wg2, *parameters_f2_wg2)
 
 print(parameters_f0_wg2)
 print(parameters_f1_wg2)
@@ -62,12 +62,12 @@ print(parameters_f2_wg2)
 plt.scatter(mls_wg2, f0_wg2, label="f0", color='red')
 plt.scatter(mls_wg2, f1_wg2, label="f1", color='green')
 plt.scatter(mls_wg2, f2_wg2, label="f2", color='blue')
-plt.plot(func_x, f0_fit_wg2, color='red')
-plt.plot(func_x, f1_fit_wg2, color='green')
-plt.plot(func_x, f2_fit_wg2, color='blue')
+plt.plot(func_x_wg2, f0_fit_wg2, color='red')
+plt.plot(func_x_wg2, f1_fit_wg2, color='green')
+plt.plot(func_x_wg2, f2_fit_wg2, color='blue')
 plt.legend()
 plt.xlabel("Water volume (ml)")
 plt.ylabel("Frequency")
-plt.title("Fourth degree polynomial fit for glass 2 (big glass)")
+plt.title("Fifth degree polynomial fit for glass 2 (big glass)")
 plt.show()
 
