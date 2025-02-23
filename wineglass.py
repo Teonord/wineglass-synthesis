@@ -44,9 +44,9 @@ def generate_partial(time: np.ndarray, frequency: float):
 
 
 # Make the amplitude oscillation
-def rotation_envelope(sound: np.ndarray, time: np.ndarray, rpm: float, depth: float = 0.8) -> np.ndarray:
-    nps = rpm / 15  # nodes per second, 4 per rotation
-    sound *= np.abs(np.sin(np.pi * nps * time)) * depth + 1 - depth  # 2 nodes per wavelength due to abs
+def rotation_envelope(sound: np.ndarray, time: np.ndarray, rpm: float, nodes: float, depth: float = 0.8) -> np.ndarray:
+    nps = nodes * rpm / 60  # nodes per second
+    sound *= np.abs(np.sin(np.pi * nps * time)) * depth + 1 - depth  # 2 sine nodes per wavelength due to abs
     return sound
 
 
@@ -57,12 +57,11 @@ def main():
 
     note_time = np.linspace(0, SUSTAIN_DURATION, int(SAMPLE_RATE * SUSTAIN_DURATION))
 
-    sound = generate_partial(note_time, f0)
-    sound = rotation_envelope(sound, note_time, FINGER_RPM)
+    sound = np.zeros_like(note_time)
 
-    for i in range(2, PARTIALS_NUM + 1):
-        partial = generate_partial(note_time, f0 * i) * (1 / (i * 2)) ** 3
-        sound += partial
+    for i in range(PARTIALS_NUM):
+        partial = generate_partial(note_time, f0 * (i + 1)) * (1 / (i + 1)) ** 3.8
+        sound += rotation_envelope(partial, note_time, FINGER_RPM, 4 + 2 * i, 0.8)
 
     sound = normalize_audio(sound)
 
