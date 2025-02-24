@@ -6,9 +6,9 @@ from curvefit import model, wg1_coefficients, wg2_coefficients
 
 
 GLASS_ONE: bool = True
-FINGER_RPM: float = 40
+FINGER_RPM: float = 50
 WATER_VOLUME_ML: float = 152.786
-SUSTAIN_DURATION: float = 3
+SUSTAIN_DURATION: float = 6
 SAMPLE_RATE: int = 41100
 PARTIALS_NUM: int = 10
 
@@ -40,8 +40,11 @@ def normalize_audio(sound: np.ndarray):
 
 # Create a partial
 def generate_partial(time: np.ndarray, frequency: float):
-    return np.sin(2 * np.pi * frequency * time)
+    return np.sin(2 * np.pi * frequency * time + generate_offset(time))
 
+# Creates an offset, simulating periodic inharmonicity
+def generate_offset(time):
+    return np.sin(time*5*np.pi)
 
 # Make the amplitude oscillation
 def rotation_envelope(sound: np.ndarray, time: np.ndarray, rpm: float, nodes: float, depth: float = 0.8) -> np.ndarray:
