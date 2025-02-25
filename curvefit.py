@@ -17,7 +17,7 @@ def wg1_coefficients(plot: bool = False) -> list[list[float]]:
     if not plot:
         return coefficients
 
-    plot_model(2, mls, f0, f1, f2, coefficients)
+    plot_model(1, mls, f0, f1, f2, coefficients)
     return coefficients
 
 
@@ -62,7 +62,7 @@ def plot_model(glass_nr: int, mls: list[float],
     plt.legend()
     plt.xlabel("Water volume (ml)")
     plt.ylabel("Frequency")
-    plt.title(f"Fifth degree polynomial fit for glass {glass_nr} (small glass)")
+    plt.title(f"Fifth degree polynomial fit for Glass {glass_nr}.")
     plt.show()
 
 
