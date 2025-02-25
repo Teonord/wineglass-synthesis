@@ -7,10 +7,16 @@ from curvefit import model, wg1_coefficients, wg2_coefficients
 GLASS_ONE: bool = True
 FINGER_RPM: float = 40
 WATER_VOLUME_ML: float = 152.786
-SUSTAIN_DURATION: float = 2
+FILL_HEIGHT: float = 3
+SUSTAIN_DURATION: float = 4
 SAMPLE_RATE: int = 41100
 PARTIALS_NUM: int = 10
 RELEASE_DURATION: float = 10  # testing
+INHARMONICITY_FREQUENCY_COEFFICIENT: float = 5
+INHARMONICITY_AMPLITUDE: float = 0.3
+
+FINGER_SCRATCH_FREQUENCIES = [
+]
 
 
 # MIDI semitones to frequency
@@ -45,7 +51,7 @@ def generate_partial(time: np.ndarray, frequency: float):
 
 # Creates an offset, simulating periodic inharmonicity
 def generate_offset(time):
-    return np.sin(time * 5 * np.pi)
+    return INHARMONICITY_AMPLITUDE * np.sin(time * INHARMONICITY_FREQUENCY_COEFFICIENT * np.pi)
 
 
 def asr_envelope(time: np.ndarray, rpm: float, nodes: float, sustain_end: float,
@@ -74,7 +80,9 @@ def asr_envelope(time: np.ndarray, rpm: float, nodes: float, sustain_end: float,
 def main():
     coefficients = wg1_coefficients() if GLASS_ONE == 1 else wg2_coefficients()
 
-    f0 = model(WATER_VOLUME_ML, *coefficients[0])
+    #f0 = model(WATER_VOLUME_ML, *coefficients[0])
+    natural = 850
+    f0 = natural*(1 + 0.0006*FILL_HEIGHT**5.5)**(-1/2)
 
     note_time = np.linspace(0, SUSTAIN_DURATION + RELEASE_DURATION,
                             int(SAMPLE_RATE * (SUSTAIN_DURATION + RELEASE_DURATION)))
@@ -89,7 +97,12 @@ def main():
 
         # Generate the sustained tome (with attack)
         partial *= asr_envelope(note_time, FINGER_RPM, 2 * (i + 1), SUSTAIN_DURATION, 0.8 ** (i + 1), (i + 1))
-
+        sound += partial
+    
+    for i in range(len(FINGER_SCRATCH_FREQUENCIES)):
+        frequency = FINGER_SCRATCH_FREQUENCIES[i]
+        partial = generate_partial(note_time, frequency) * 0.3 * (1 / (i + 1)) ** 3.8
+        partial *= asr_envelope(note_time, FINGER_RPM, 2 * (i + 1), SUSTAIN_DURATION, 0.8 ** (i + 1), (2*i + 1))
         sound += partial
 
     sound = normalize_audio(sound)
