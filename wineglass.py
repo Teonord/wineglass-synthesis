@@ -1,6 +1,5 @@
 import numpy as np
 import sounddevice
-from scipy.signal import find_peaks
 
 from curvefit import model, wg1_coefficients, wg2_coefficients
 
