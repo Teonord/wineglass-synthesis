@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def vol_from_freq(coefficients: list[float], freqs: list[float]) -> list[list[float]]:
+def vol_from_freq(coefficients: list[float], freqs: list[float]) -> list[float]:
     last = coefficients[-1]
 
     res = []
