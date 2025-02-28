@@ -1,13 +1,14 @@
 import numpy as np
 import sounddevice
+from scipy.io import wavfile
 
 from curvefit import model, wg1_coefficients, wg2_coefficients
 
 GLASS_ONE: bool = True
-FINGER_RPM: float = 40
-WATER_VOLUME_ML: float = 152.786
+FINGER_RPM: float = 50
+WATER_VOLUME_ML: float = 247.66
 SUSTAIN_DURATION: float = 5
-SAMPLE_RATE: int = 41100
+SAMPLE_RATE: int = 44100
 PARTIALS_NUM: int = 10
 RELEASE_DURATION: float = 10  # testing
 
@@ -70,13 +71,13 @@ def asr_envelope(time: np.ndarray, rpm: float, nodes: float, sustain_end: float,
     return envelope
 
 
-def main():
-    coefficients = wg1_coefficients() if GLASS_ONE == 1 else wg2_coefficients()
+def generate_tone(volume: float, duration: float, rpm: float = 40, glass_one: bool = True) -> np.ndarray:
+    coefficients = wg1_coefficients() if glass_one else wg2_coefficients()
 
-    f0 = model(WATER_VOLUME_ML, *coefficients[0])
+    f0 = model(volume, *coefficients[0])
 
-    note_time = np.linspace(0, SUSTAIN_DURATION + RELEASE_DURATION,
-                            int(SAMPLE_RATE * (SUSTAIN_DURATION + RELEASE_DURATION)))
+    note_time = np.linspace(0, duration + RELEASE_DURATION,
+                            int(SAMPLE_RATE * (duration + RELEASE_DURATION)))
 
     sound = np.zeros_like(note_time)
 
@@ -87,11 +88,17 @@ def main():
         partial = generate_partial(note_time, frequency) * (1 / (i + 1)) ** 3.8
 
         # Generate the sustained tome (with attack)
-        partial *= asr_envelope(note_time, FINGER_RPM, 2 * (i + 1), SUSTAIN_DURATION, 0.8 ** (i + 1), (i + 1))
+        partial *= asr_envelope(note_time, rpm, 2 * (i + 1), duration, 0.7 ** (i + 1), (i + 1))
 
         sound += partial
 
-    sound = normalize_audio(sound)
+    return sound
+
+
+def main():
+    sound = normalize_audio(generate_tone(WATER_VOLUME_ML, SUSTAIN_DURATION, FINGER_RPM, GLASS_ONE))
+
+    wavfile.write(f"sounds/{WATER_VOLUME_ML}ml{FINGER_RPM}rpm.wav", SAMPLE_RATE, (sound * 32767).astype(np.int16))
 
     sounddevice.play(sound, SAMPLE_RATE)
     sounddevice.wait()
