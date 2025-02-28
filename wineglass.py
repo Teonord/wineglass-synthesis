@@ -6,7 +6,7 @@ from curvefit import model, wg1_coefficients, wg2_coefficients
 GLASS_ONE: bool = True
 FINGER_RPM: float = 40
 WATER_VOLUME_ML: float = 152.786
-SUSTAIN_DURATION: float = 2
+SUSTAIN_DURATION: float = 5
 SAMPLE_RATE: int = 41100
 PARTIALS_NUM: int = 10
 RELEASE_DURATION: float = 10  # testing
